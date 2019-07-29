@@ -1,18 +1,27 @@
-DICTIONARY = []
+require_relative './static/ufo_ascii.rb'
 
-File.open(File.dirname(__FILE__) + "/static/nouns.txt", "r") do |f|
-  f.each_line do |line|
-    DICTIONARY << line.chomp
-  end
-end
 
-# DICTIONARY = ['dog', 'cat', 'bootcamp']
+# DICTIONARY = []
+
+# File.open(File.dirname(__FILE__) + "/static/nouns.txt", "r") do |f|
+#   f.each_line do |line|
+#     DICTIONARY << line.chomp
+#   end
+# end
+
+DICTIONARY = ['dog', 'cat', 'bootcamp']
 
 class UFO
-  attr_reader :guess_word, :correctly_guessed, :incorrectly_guessed, :remaining_guesses
+  attr_reader :guess_word, :correctly_guessed, :incorrectly_guessed, :remaining_guesses, :player_play
 
   def self.random_word
     DICTIONARY.sample.upcase
+  end
+
+  def self.char_validator(char)
+    if !('A'..'Z').include?(char)
+      puts "Please enter a valid character!"
+    end
   end
 
   def initialize
@@ -41,6 +50,21 @@ class UFO
     indices.each { |idx| @guess_word[idx] = char }
   end
 
+  # UI / Frontend Behavior
+
+  def intro
+    system("clear")
+    puts 'Welcome to UFO: The Game!'
+    puts UFO_INTRO
+    print 'Are you ready to play (Y/N)? '
+    @player_play = gets.chomp.upcase
+  end
+
+  def play_again?
+    print "Would you like to play again (Y/N)? "
+    @player_play = gets.chomp.upcase
+  end
+
   def try_guess(char)
     if self.already_guessed?(char)
       puts "You can only guess that letter once, please try again."
@@ -63,9 +87,24 @@ class UFO
   end
 
   def ask_user_for_guess
+    puts
+    puts "Incorrect guesses:"
+    puts "#{self.incorrectly_guessed.join(' ')}"
+    puts
+    puts "Correct guesses:"
+    puts "#{self.correctly_guessed.join(' ')}"
+    puts
+
+    # puts "Incorrect Guesses Remaining: #{self.remaining_guesses}"
+    puts "Codeword: #{self.guess_word.join(' ')}"
+    puts
+
     print "Please enter your guess: "
     char = gets.chomp.upcase
     self.try_guess(char)
+
+
+    system("clear")
   end
 
   def win?
@@ -94,4 +133,14 @@ class UFO
       return false
     end
   end
+
+  def print_ufo_img
+    system("clear")
+    puts UFO_PHASES[6 - self.remaining_guesses]
+  end
+
+  def game_over_msg
+    self.win? || self.lose?
+  end
+
 end
