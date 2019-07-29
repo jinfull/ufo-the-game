@@ -1,15 +1,11 @@
 require_relative './static/ufo_ascii.rb'
 
-
 DICTIONARY = []
-
 File.open(File.dirname(__FILE__) + "/static/nouns.txt", "r") do |f|
   f.each_line do |line|
     DICTIONARY << line.chomp
   end
 end
-
-DICTIONARY = ['dog', 'cat', 'bootcamp']
 
 class UFO
   attr_reader :guess_word, :correctly_guessed, :incorrectly_guessed, :remaining_guesses, :player_play
@@ -71,11 +67,12 @@ class UFO
     false
   end
 
-  # UI / Frontend Behavior
-
   def intro
     system("clear")
+
     puts 'Welcome to UFO: The Game!'
+    puts 'Instructions: save us from alien abduction by guessing letters in the codeword.'
+
     puts UFO_INTRO
     while true
       print 'Are you ready to play (Y/N)? '
@@ -111,19 +108,26 @@ class UFO
   end
 
   def ask_user_for_guess
+    self.bonus
 
     self.print_ufo_img
-    puts
+
     puts "Incorrect guesses:"
-    puts "#{self.incorrectly_guessed.join(' ')}"
+
+    if self.incorrectly_guessed.empty?
+      puts 'None'
+    else
+      puts "#{self.incorrectly_guessed.join(' ')}"
+    end
+
     puts
-    puts "Correct guesses:"
-    puts "#{self.correctly_guessed.join(' ')}"
+    puts "Codeword:"
+    puts "#{self.guess_word.join(' ')}"
+    puts
+    puts "Number of dictionary matches: #{@counter}"
     puts
 
-    puts "Codeword: #{self.guess_word.join(' ')}"
-    puts
-    
+
     while true
       print "Please enter your guess: "
       char = gets.chomp.upcase
@@ -131,7 +135,6 @@ class UFO
     end
 
     self.try_guess(char)
-    # system("clear")
   end
 
   def win?
@@ -157,18 +160,17 @@ class UFO
   end
 
   def print_ufo_img
-    # system("clear")
     puts UFO_PHASES[6 - self.remaining_guesses]
+    puts
   end
 
   def game_over_msg
     if @code_word == @guess_word.join('')
       puts UFO_PHASES.first
+      puts
     else
       self.print_ufo_img
     end
-
-    puts
 
     if self.win?
       puts 'Correct! You saved the person and earned a medal of honor!'
@@ -186,5 +188,30 @@ class UFO
     end
 
     system("clear")
+  end
+
+  # bonus!
+  def regexp_guess_word
+    @regex_guess_word = @guess_word.map do |ch|
+      if ch == '_'
+        '.'
+      else
+        ch.downcase
+      end
+    end
+
+    @regex_guess_word = Regexp.new @regex_guess_word.join('')
+  end
+
+  def bonus
+    self.regexp_guess_word
+
+    @counter = 0
+
+    DICTIONARY.each do |word|
+      @counter += 1 if word.match(@regex_guess_word)
+    end
+    
+    @counter
   end
 end

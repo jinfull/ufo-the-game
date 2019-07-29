@@ -16,5 +16,4 @@ while ufo.player_playing
   ufo.game_over_msg
 end
 
-puts
 puts 'Goodbye!'
