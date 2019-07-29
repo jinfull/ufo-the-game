@@ -1,13 +1,13 @@
 require_relative './static/ufo_ascii.rb'
 
 
-# DICTIONARY = []
+DICTIONARY = []
 
-# File.open(File.dirname(__FILE__) + "/static/nouns.txt", "r") do |f|
-#   f.each_line do |line|
-#     DICTIONARY << line.chomp
-#   end
-# end
+File.open(File.dirname(__FILE__) + "/static/nouns.txt", "r") do |f|
+  f.each_line do |line|
+    DICTIONARY << line.chomp
+  end
+end
 
 DICTIONARY = ['dog', 'cat', 'bootcamp']
 
@@ -16,12 +16,6 @@ class UFO
 
   def self.random_word
     DICTIONARY.sample.upcase
-  end
-
-  def self.char_validator(char)
-    if !('A'..'Z').include?(char)
-      puts "Please enter a valid character!"
-    end
   end
 
   def initialize
@@ -50,22 +44,50 @@ class UFO
     indices.each { |idx| @guess_word[idx] = char }
   end
 
+  def char_validator(char)
+    if self.already_guessed?(char)
+      puts
+      puts "You can only guess that letter once, please try again."
+      return false
+    elsif char.length > 1
+      puts "\nI cannot understand your input. Please guess a single letter.\n"
+      return false
+    elsif ('A'..'Z').include?(char)
+      return true
+    end
+
+    puts "I cannot understand your input. Please guess a single letter."
+  end
+
+  def yes_no_validator(char)
+    return false if !['N', 'Y'].include?(char)
+
+    true
+  end
+
+  def player_playing
+    return true if @player_play == 'Y'
+
+    false
+  end
+
   # UI / Frontend Behavior
 
   def intro
     system("clear")
     puts 'Welcome to UFO: The Game!'
     puts UFO_INTRO
-    print 'Are you ready to play (Y/N)? '
-    @player_play = gets.chomp.upcase
-  end
-
-  def play_again?
-    print "Would you like to play again (Y/N)? "
-    @player_play = gets.chomp.upcase
+    while true
+      print 'Are you ready to play (Y/N)? '
+      @player_play = gets.chomp.upcase
+      break if self.yes_no_validator(@player_play)
+    end
+    system("clear")
   end
 
   def try_guess(char)
+    system("clear")
+
     if self.already_guessed?(char)
       puts "You can only guess that letter once, please try again."
       return false
@@ -77,16 +99,20 @@ class UFO
       @remaining_guesses -= 1
       @incorrectly_guessed << char
       puts "Incorrect! The tractor beam pulls the person in further."
+      puts
     else
       self.fill_indices(char, matching_indices)
       @correctly_guessed << char
       puts "Correct! You're closer to cracking the codeword."
+      puts
     end
 
     true
   end
 
   def ask_user_for_guess
+
+    self.print_ufo_img
     puts
     puts "Incorrect guesses:"
     puts "#{self.incorrectly_guessed.join(' ')}"
@@ -95,21 +121,21 @@ class UFO
     puts "#{self.correctly_guessed.join(' ')}"
     puts
 
-    # puts "Incorrect Guesses Remaining: #{self.remaining_guesses}"
     puts "Codeword: #{self.guess_word.join(' ')}"
     puts
+    
+    while true
+      print "Please enter your guess: "
+      char = gets.chomp.upcase
+      break if self.char_validator(char)
+    end
 
-    print "Please enter your guess: "
-    char = gets.chomp.upcase
     self.try_guess(char)
-
-
-    system("clear")
+    # system("clear")
   end
 
   def win?
     if @code_word == @guess_word.join('')
-      puts 'Correct! You saved the person and earned a medal of honor!'
       return true
     else
       return false
@@ -118,7 +144,6 @@ class UFO
 
   def lose?
     if @remaining_guesses == 0
-      puts 'Incorrect! You failed to save the person and are scrutinized heavily by the media!'
       return true
     else
       return false
@@ -126,21 +151,40 @@ class UFO
   end
 
   def game_over?
-    if win? || lose?
-      puts 'The codeword is ' + @code_word
-      return true
-    else
-      return false
-    end
+    return true if self.win? || self.lose?
+
+    false
   end
 
   def print_ufo_img
-    system("clear")
+    # system("clear")
     puts UFO_PHASES[6 - self.remaining_guesses]
   end
 
   def game_over_msg
-    self.win? || self.lose?
-  end
+    if @code_word == @guess_word.join('')
+      puts UFO_PHASES.first
+    else
+      self.print_ufo_img
+    end
 
+    puts
+
+    if self.win?
+      puts 'Correct! You saved the person and earned a medal of honor!'
+    else
+      puts 'Incorrect! You failed to save the person and are scrutinized heavily by the media!'
+    end
+
+    puts 'The codeword is: ' + @code_word + '.'
+    puts
+
+    while true
+      print "Would you like to play again (Y/N)? "
+      @player_play = gets.chomp.upcase
+      break if self.yes_no_validator(@player_play)
+    end
+
+    system("clear")
+  end
 end

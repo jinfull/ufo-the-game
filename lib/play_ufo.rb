@@ -1,22 +1,20 @@
 require_relative "ufo"
-require_relative "game"
 
 ufo = UFO.new
-
 ufo.intro
 
-while ufo.player_play == 'Y' 
+while ufo.player_playing
+  # instantiate new ufo 
   ufo = UFO.new
 
+  # ask user for guess until game is over
   while !ufo.game_over?
-    ufo.print_ufo_img
     ufo.ask_user_for_guess
   end
 
-  ufo.print_ufo_img
-
-  puts
+  # game over, play again?
   ufo.game_over_msg
-  puts
-  ufo.play_again?
 end
+
+puts
+puts 'Goodbye!'
