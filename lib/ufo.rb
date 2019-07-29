@@ -138,11 +138,9 @@ class UFO
   end
 
   def lose?
-    if @remaining_guesses == 0
-      return true
-    else
-      return false
-    end
+    return true if @remaining_guesses == 0
+    
+    false
   end
 
   def game_over?
