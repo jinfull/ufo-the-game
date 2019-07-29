@@ -8,7 +8,7 @@ while ufo.player_playing
   ufo = UFO.new
 
   # ask user for guess until game is over
-  while !ufo.game_over?
+  until ufo.game_over?
     ufo.ask_user_for_guess
   end
 

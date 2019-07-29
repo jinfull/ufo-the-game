@@ -1,4 +1,4 @@
-require_relative './static/ufo_ascii.rb'
+require_relative './static/ufo_ascii'
 
 DICTIONARY = []
 File.open(File.dirname(__FILE__) + "/static/nouns.txt", "r") do |f|
@@ -6,6 +6,8 @@ File.open(File.dirname(__FILE__) + "/static/nouns.txt", "r") do |f|
     DICTIONARY << line.chomp
   end
 end
+
+# DICTIONARY = ['dog', 'cat']
 
 class UFO
   attr_reader :guess_word, :correctly_guessed, :incorrectly_guessed, :remaining_guesses, :player_play
@@ -95,13 +97,11 @@ class UFO
     if matching_indices.empty?
       @remaining_guesses -= 1
       @incorrectly_guessed << char
-      puts "Incorrect! The tractor beam pulls the person in further."
-      puts
+      puts "Incorrect! The tractor beam pulls the person in further.\n"
     else
       self.fill_indices(char, matching_indices)
       @correctly_guessed << char
-      puts "Correct! You're closer to cracking the codeword."
-      puts
+      puts "Correct! You're closer to cracking the codeword.\n"
     end
 
     true
@@ -109,27 +109,21 @@ class UFO
 
   def ask_user_for_guess
     self.bonus
-
     self.print_ufo_img
 
     puts "Incorrect guesses:"
-
     if self.incorrectly_guessed.empty?
       puts 'None'
     else
       puts "#{self.incorrectly_guessed.join(' ')}"
     end
 
-    puts
-    puts "Codeword:"
+    puts "\nCodeword:"
     puts "#{self.guess_word.join(' ')}"
-    puts
-    puts "Number of dictionary matches: #{@counter}"
-    puts
-
+    puts "\nNumber of dictionary matches: #{@counter}"
 
     while true
-      print "Please enter your guess: "
+      print "\nPlease enter your guess: "
       char = gets.chomp.upcase
       break if self.char_validator(char)
     end
@@ -138,11 +132,9 @@ class UFO
   end
 
   def win?
-    if @code_word == @guess_word.join('')
-      return true
-    else
-      return false
-    end
+    return true if @code_word == @guess_word.join('')
+    
+    false
   end
 
   def lose?
@@ -160,14 +152,12 @@ class UFO
   end
 
   def print_ufo_img
-    puts UFO_PHASES[6 - self.remaining_guesses]
-    puts
+    puts "\n" + UFO_PHASES[6 - self.remaining_guesses] + "\n"
   end
 
   def game_over_msg
-    if @code_word == @guess_word.join('')
-      puts UFO_PHASES.first
-      puts
+    if self.win?
+      puts UFO_PHASES.first + "\n"
     else
       self.print_ufo_img
     end
@@ -178,7 +168,7 @@ class UFO
       puts 'Incorrect! You failed to save the person and are scrutinized heavily by the media!'
     end
 
-    puts 'The codeword is: ' + @code_word + '.'
+    puts "The codeword is: " + @code_word + "."
     puts
 
     while true
