@@ -300,4 +300,21 @@ describe "UFO" do
       end
     end
   end
+
+  describe "bonus feature!" do 
+    describe "regexp_guess_word" do
+      it "should generate a matching regexp" do
+        ufo.instance_variable_set(:@guess_word, ['B', 'A', 'B', '_'])
+        expect(ufo.regexp_guess_word).to eq(/bab./)
+      end
+    end
+
+    describe "bonus" do 
+      it "should return the correct number of matching regexps in dictionary" do
+        ufo.instance_variable_set(:@guess_word, ['B', 'A', 'B', '_'])
+        ufo.regexp_guess_word
+        expect(ufo.bonus).to eq(5)
+      end
+    end
+  end
 end

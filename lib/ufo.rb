@@ -7,8 +7,6 @@ File.open(File.dirname(__FILE__) + "/static/nouns.txt", "r") do |f|
   end
 end
 
-# DICTIONARY = ['dog', 'cat']
-
 class UFO
   attr_reader :guess_word, :correctly_guessed, :incorrectly_guessed, :remaining_guesses, :player_play
 
@@ -180,7 +178,7 @@ class UFO
 
   # bonus!
   def regexp_guess_word
-    @regex_guess_word = @guess_word.map do |ch|
+    @regexp_guess_word = @guess_word.map do |ch|
       if ch == '_'
         '.'
       else
@@ -188,7 +186,7 @@ class UFO
       end
     end
 
-    @regex_guess_word = Regexp.new @regex_guess_word.join('')
+    @regexp_guess_word = Regexp.new @regexp_guess_word.join('')
   end
 
   def bonus
@@ -197,7 +195,7 @@ class UFO
     @counter = 0
 
     DICTIONARY.each do |word|
-      @counter += 1 if word.match(@regex_guess_word)
+      @counter += 1 if word.match(@regexp_guess_word)
     end
     
     @counter
