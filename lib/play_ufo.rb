@@ -4,15 +4,12 @@ ufo = UFO.new
 ufo.intro
 
 while ufo.player_playing
-  # instantiate new ufo 
   ufo = UFO.new
 
-  # ask user for guess until game is over
   until ufo.game_over?
     ufo.ask_user_for_guess
   end
 
-  # game over, play again?
   ufo.game_over_msg
 end
 
